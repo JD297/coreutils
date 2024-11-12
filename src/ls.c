@@ -9,6 +9,7 @@ void print_usage()
 	printf("Usage: %s [OPTION]... [FILE]\n", TARGET);
 	printf("List stats from files\n");
 	printf("\n");
+	printf("  -a		Entries with leading . will be shown\n");
 	printf("  -l		List files vertically\n");
 	printf("\n");
 	printf("JD297 coreutils source code <https://github.com/jd297/coreutils>\n");
@@ -16,12 +17,16 @@ void print_usage()
 
 int main(int argc, char** argv)
 {
+	int aflag = 0;
 	int lflag = 0;
 
 	int opt;
 
-	while ((opt = getopt(argc, argv, "l")) != -1) {
+	while ((opt = getopt(argc, argv, "al")) != -1) {
 		switch (opt) {
+			case 'a':
+				aflag = 1;
+				break;
 			case 'l':
 				lflag = 1;
 				break;
@@ -61,6 +66,10 @@ int main(int argc, char** argv)
 	}
 
 	while ((dir = readdir(d)) != NULL) {
+		if (!aflag && dir->d_name[0] == '.') {
+			continue;
+		}
+
 		list = realloc(list, (list_index + 1) * sizeof(char*));
 
 		if (list == NULL) {
