@@ -6,7 +6,7 @@
 
 void print_usage()
 {
-	printf("Usage: %s [OPTION]...\n", TARGET);
+	printf("Usage: %s [OPTION]... [FILE]\n", TARGET);
 	printf("List stats from files\n");
 	printf("\n");
 	printf("  -l		List files vertically\n");
@@ -31,7 +31,16 @@ int main(int argc, char** argv)
 		}
 	}
 
-	const char* path = ".";
+	char* path = NULL;
+
+	for (int index = optind; index < argc; index++) {
+		path = argv[index];
+		break;
+	}
+
+	if (path == NULL) {
+		path = ".";
+	}
 
 	DIR *d;
 	struct dirent *dir;
