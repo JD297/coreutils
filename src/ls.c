@@ -2,6 +2,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 void print_usage()
@@ -83,6 +84,18 @@ int main(int argc, char** argv)
 
 	if (closedir(d) == -1) {
 		err(EXIT_FAILURE, "%s", path);
+	}
+
+	for (int n = 0; n < list_index; n++) {
+		for (int o = 0; o < list_index - 1; o++) {
+			if (strcmp(list[o], list[o + 1]) <= 0) {
+				continue;
+			}
+
+			char* tmp = list[o];
+			list[o] = list[o + 1];
+			list[o + 1] = tmp;
+		}
 	}
 
 	for (int i = 0; i < list_index; i++) {
