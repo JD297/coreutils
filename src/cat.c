@@ -3,9 +3,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-#define BUFFER_SIZE 4096
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 void print_usage()
 {
@@ -23,30 +22,34 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
-	const char* pathname = argv[1];
+	struct stat sb;
+
+	if (stat(argv[1], &sb) == -1) {
+		err(EXIT_FAILURE, "stat");
+	}
 
 	int fd;
 
-	if ((fd = open(pathname, O_RDONLY)) == -1) {
-		err(EXIT_FAILURE, "%s", pathname);
+	if ((fd = open(argv[1], O_RDONLY)) == -1) {
+		err(EXIT_FAILURE, "%s", argv[1]);
 	}
 
-	char buffer[BUFFER_SIZE];
+	char *buf = (char *)mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
-	ssize_t bytes;
+	if (buf == MAP_FAILED) {
+		err(EXIT_FAILURE, "mmap");
+	}
 
-	do {
-		memset(buffer, 0, sizeof(buffer));
+	if (write(STDOUT_FILENO, buf, sb.st_size) == -1) {
+		err(EXIT_FAILURE, "write");
+	}
 
-		if ((bytes = read(fd, buffer, sizeof(buffer))) == -1) {
-			err(EXIT_FAILURE, "%s", pathname);
-		}
-
-		printf("%.*s", (int)bytes, buffer);
-	} while (bytes > 0);
+	if (munmap(buf, sb.st_size) == -1) {
+		err(EXIT_FAILURE, "munmap");
+	}
 
 	if (close(fd) == -1) {
-		err(EXIT_FAILURE, "%s", pathname);
+		err(EXIT_FAILURE, "%s", argv[1]);
 	}
 
 	return 0;
