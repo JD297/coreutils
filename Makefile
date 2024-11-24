@@ -1,22 +1,27 @@
 PREFIX		= /usr/local
 BINDIR		= $(PREFIX)/bin
 MANDIR		= $(PREFIX)/share/man
+LIBDIR		= $(PREFIX)/lib
+INCLUDEDIR	= $(PREFIX)/include
+
 BUILDDIR	= bin
 SRC		= src
 SRC_FILES	= $(wildcard $(SRC)/*.c)
 TARGETS		= $(patsubst $(SRC)/%.c,%,$(SRC_FILES))
 
 CC		= gcc
-CCFLAGS		= -Wall -Wextra -Wpedantic
+CCFLAGS		= -Wall -Wextra -Wpedantic -nodefaultlibs -W -ffreestanding
 CCFLAGSPROG	=
-CCLIBS		=
+CCLIBS		= -l:libc.so
+CCLIB		= -L $(LIBDIR)
+CCINCLUDE	= -I $(INCLUDEDIR)
 #CCFLAGSDEBUG	= -g
 #CCLIBSSTATIC	= -static
 
 all: $(TARGETS)
 
 %: $(SRC)/%.c
-	$(CC) $(CCFLAGS) $(CCFLAGSDEBUG) $(CCLIBSSTATIC) $(CCLIBS) $(CCFLAGSPROG) -DTARGET=\"$@\" -o $(BUILDDIR)/$@ $<
+	$(CC) $(CCINCLUDE) $(CCFLAGS) $(CCFLAGSDEBUG) $(CCLIBSSTATIC) $(CCFLAGSPROG) -DTARGET=\"$@\" -o $(BUILDDIR)/$@ $< $(CCLIB) $(CCLIBS)
 
 clean:
 	rm -f $(addprefix $(BUILDDIR)/, $(TARGETS))
