@@ -12,11 +12,11 @@ TARGETS		= $(patsubst $(SRC)/%.c,%,$(SRC_FILES))
 CC		= gcc
 CCFLAGS		= -Wall -Wextra -Wpedantic -nodefaultlibs -W -ffreestanding
 CCFLAGSPROG	=
-CCLIBS		= -l:libc.so
+CCLIBS		= -l:libc.a
 CCLIB		= -L $(LIBDIR)
 CCINCLUDE	= -I $(INCLUDEDIR)
 #CCFLAGSDEBUG	= -g
-#CCLIBSSTATIC	= -static
+CCLIBSSTATIC	= -static
 
 all: $(TARGETS)
 
