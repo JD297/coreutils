@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <sys/utsname.h>
 
-int main()
+int main(void)
 {
 	struct utsname uts;
 

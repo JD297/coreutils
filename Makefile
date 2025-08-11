@@ -1,33 +1,45 @@
-PREFIX		= /usr/local
-BINDIR		= $(PREFIX)/bin
-MANDIR		= $(PREFIX)/share/man
-LIBDIR		= $(PREFIX)/lib
-INCLUDEDIR	= $(PREFIX)/include
+.POSIX:
 
-BUILDDIR	= bin
-SRC		= src
-SRC_FILES	= $(wildcard $(SRC)/*.c)
-TARGETS		= $(patsubst $(SRC)/%.c,%,$(SRC_FILES))
+CC            = cc
+CFLAGS        = -Wall -Wextra -Wpedantic -g
+LDFLAGS       =
 
-CC		= gcc
-CCFLAGS		= -Wall -Wextra -Wpedantic -nodefaultlibs -W -ffreestanding
-CCFLAGSPROG	=
-CCLIBS		= -l:libc.a
-CCLIB		= -L $(LIBDIR)
-CCINCLUDE	= -I $(INCLUDEDIR)
-#CCFLAGSDEBUG	= -g
-CCLIBSSTATIC	= -static
+PREFIX        = /usr/local
+BINDIR        = $(PREFIX)/bin
+MANDIR        = $(PREFIX)/share/man
+SRCDIR        = src
+BUILDDIR      = build
 
-all: $(TARGETS)
+all: $(BUILDDIR)/cat $(BUILDDIR)/env $(BUILDDIR)/ls $(BUILDDIR)/halt $(BUILDDIR)/uname
 
-%: $(SRC)/%.c
-	$(CC) $(CCINCLUDE) $(CCFLAGS) $(CCFLAGSDEBUG) $(CCLIBSSTATIC) $(CCFLAGSPROG) -DTARGET=\"$@\" -o $(BUILDDIR)/$@ $< $(CCLIB) $(CCLIBS)
+$(BUILDDIR)/cat: $(SRCDIR)/cat.c
+	$(CC) $(CFLAGS) $(SRCDIR)/cat.c -o $@ $(LDFLAGS)
+
+$(BUILDDIR)/env: $(SRCDIR)/env.c
+	$(CC) $(CFLAGS) $(SRCDIR)/env.c -o $@ $(LDFLAGS)
+
+$(BUILDDIR)/ls: $(SRCDIR)/ls.c
+	$(CC) $(CFLAGS) $(SRCDIR)/ls.c -o $@ $(LDFLAGS)
+
+$(BUILDDIR)/halt: $(SRCDIR)/halt.c
+	$(CC) $(CFLAGS) $(SRCDIR)/halt.c -o $@ $(LDFLAGS)
+
+$(BUILDDIR)/uname: $(SRCDIR)/uname.c
+	$(CC) $(CFLAGS) $(SRCDIR)/uname.c -o $@ $(LDFLAGS)
 
 clean:
-	rm -f $(addprefix $(BUILDDIR)/, $(TARGETS))
+	rm $(BUILDDIR)/*
 
-install: $(TARGETS)
-	cp $(addprefix $(BUILDDIR)/, $(TARGETS)) $(BINDIR)
+install: all
+	cp $(BUILDDIR)/cat $(BINDIR)
+	cp $(BUILDDIR)/env $(BINDIR)
+	cp $(BUILDDIR)/ls $(BINDIR)
+	cp $(BUILDDIR)/halt $(BINDIR)
+	cp $(BUILDDIR)/uname $(BINDIR)
 
 uninstall:
-	rm -f $(addprefix $(BINDIR)/, $(TARGETS))
+	rm -f $(BINDIR)/cat
+	rm -f $(BINDIR)/env
+	rm -f $(BINDIR)/ls
+	rm -f $(BINDIR)/halt
+	rm -f $(BINDIR)/uname

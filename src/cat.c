@@ -7,21 +7,13 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-void print_usage()
-{
-	printf("Usage: %s [FILE]...\n", TARGET);
-	printf("Concatenate and print FILE(s)\n");
-	printf("\n");
-	printf("JD297 %s source code <https://github.com/jd297/coreutils>\n", TARGET);
-}
-
-#define HANDLE_ERROR(object, error) fprintf(stderr, "%s: %s: %s\n", TARGET, object, strerror(error)); \
+#define HANDLE_ERROR(object, error) fprintf(stderr, "%s: %s: %s\n", argv[0], object, strerror(error)); \
                              continue
 
 int main(int argc, char** argv)
 {
 	if (argc < 2) {
-		print_usage();
+		fprintf(stderr, "usage: %s [FILE]...\n", argv[0]);
 
 		exit(EXIT_FAILURE);
 	}
